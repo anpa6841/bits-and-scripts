@@ -1,5 +1,11 @@
 #!/bin/bash
 
+mkdir -p repos
+cd repos
+
+eval $(ssh-agent)
+ssh-add ~/.ssh/<github_private_key>
+
 curl https://api.github.com/users/anpa6841/repos?per_page=100 | jq '.[].name' | tr -d '"' > repos.txt
 
 # Read repos.txt and clone each repository
@@ -11,4 +17,7 @@ while IFS= read -r repo; do
 done < repos.txt
 
 echo "All repositories have been cloned."
+
+echo "Creating a Zip-protected Archive..."
+zip -e -r github-projects.zip * 
 
