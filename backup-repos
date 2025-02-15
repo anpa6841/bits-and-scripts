@@ -1,23 +1,39 @@
 #!/bin/bash
 
-mkdir -p repos
-cd repos
+ARCHIVE=0  # Default: Do not archive
 
-eval $(ssh-agent)
-ssh-add ~/.ssh/<github_private_key>
+# Parse command-line arguments
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        -a|--archive) ARCHIVE=1 ;;  # Enable archive mode
+        -h|--help)
+            echo "Usage: $0 [-a | --archive]"
+            echo "  -a, --archive   Create a Zip-protected Archive of the cloned repository"
+            exit 0
+            ;;
+        *) echo "Unknown option: $1"; exit 1 ;;
+    esac
+    shift
+done
 
 curl https://api.github.com/users/anpa6841/repos?per_page=100 | jq '.[].name' | tr -d '"' > repos.txt
 
 # Read repos.txt and clone each repository
 while IFS= read -r repo; do
-    if [ ! -z "$repo" ]; then
-        echo "Cloning $repo ..."
-        git clone "git@github.com:anpa6841/$repo"
-    fi
+	repo_path=$(pwd)/$repo
+	echo "Repo Path: $repo_path"
+	# Check if the directory exists and contains a Git repository
+	if [ -d "$repo_path" ] && [ -d "$repo_path/.git" ]; then
+		echo "Repository already exists in '$TARGET_DIR'. Skipping clone."
+	else
+		echo "Cloning repository..."
+		git clone "git@github.com:anpa6841/$repo"
+	fi
 done < repos.txt
 
 echo "All repositories have been cloned."
 
-echo "Creating a Zip-protected Archive..."
-zip -e -r github-projects.zip * 
-
+if [ $ARCHIVE -eq 1 ]; then
+	echo "Creating a Zip-protected Archive..."
+	zip -e -r github-projects.zip * 
+fi
