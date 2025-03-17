@@ -1,0 +1,6 @@
+perk/ubuntu-20.04-arm64
+archlinux/archlinux
+fedora/38-cloud-base
+centos/7
+centos/8
+debian/bookworm64
