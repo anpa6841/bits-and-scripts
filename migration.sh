@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Bitbucket credentials
-WORKSPACE="cloudwalker7605"
-BITBUCKET_USER="cloudwalker7605-admin"
+WORKSPACE="<your-workspace>"
+BITBUCKET_USER="<your-bitbucket-user-admin>"
 APP_PASSWORD="<APP_PASSWORD>"
 
 for dir in */; do
